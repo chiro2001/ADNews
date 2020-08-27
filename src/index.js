@@ -10,6 +10,7 @@ import { ThemeProvider } from '@material-ui/core/styles';
 import { Config } from "./config.ts"
 
 import Main from "./components/main"
+import Thread from "./components/thread"
 import ImageViewer from "./components/image-viewer"
 import * as serviceWorker from './serviceWorker';
 
@@ -32,6 +33,7 @@ ReactDOM.render(
     <Router>
       <Route path="/" component={App} />
       <Route path='/main' component={Main} />
+      <Route path='/thread/:id' component={Thread} />
       <Route path='/image-viewer/:_url' component={ImageViewer} />
       <Redirect from="/" to="/main" />
     </Router>

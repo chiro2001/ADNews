@@ -243,9 +243,25 @@ export default class Main extends React.Component {
           // 不考虑致闻
           if (this.oldThreads['' + i.id] !== undefined)
             continue
-          if (nowThreadsIds['' + i.id])
-            continue
-          tmp.push(this.preParse(i))
+          // 这个串是不是存在在浏览区
+          if (nowThreadsIds['' + i.id]) {
+            // 找到这个串
+            for (let j=0; j<this.state.threads.length; j++) {
+              if (this.state.threads[j].id === i.id) {
+                // 找到了就替换
+                this.setState((pre) => {
+                  let tmp2 = _.cloneDeep(pre.threads)
+                  tmp2[j] = i
+                  return {
+                    threads: tmp2
+                  }
+                })
+                break
+              }
+            }
+          }
+          else
+            tmp.push(this.preParse(i))
           // console.log(i)
         }
         return {
@@ -297,7 +313,8 @@ export default class Main extends React.Component {
         this.props.history.push('/image-viewer/' + window.btoa(Nmb.CDN_IMG + data.img + data.ext))
       }}
       className={'img' + window.btoa(data.img)}
-    /> : <div />
+      style={tmpStyles.cardContentImage}
+    /> : undefined
     let imgRes = imgTop
 
     if (this.checkedThreads[data.id] === undefined)
@@ -322,7 +339,7 @@ export default class Main extends React.Component {
         // console.log(_.cloneDeep(event))
         // console.log(event.target.checked)
         this.checkedThreads[data.id] = event.target.checked
-        console.log(this.checkedThreads)
+        // console.log(this.checkedThreads)
       }}
     // onClick={(event) => {
     //   event.stopPropagation()
@@ -336,6 +353,7 @@ export default class Main extends React.Component {
       }}
         onClick={() => {
           console.log("Thread Clicked!")
+          this.props.history.push('/thread/' + data.id)
         }} >
         <div style={tmpStyles.cardHead}>
           <div>
@@ -346,7 +364,7 @@ export default class Main extends React.Component {
           {muiChoiseBox}
         </div>
         <div style={tmpStyles.cardContent}>
-          <div style={tmpStyles.cardContentImage}>
+          <div>
             {imgRes}
           </div>
           <div style={tmpStyles.cardText} dangerouslySetInnerHTML={{ __html: data.content }}></div>
@@ -424,7 +442,8 @@ export default class Main extends React.Component {
             </List>
           </div>
         </Drawer>
-        <AppBar position="static">
+        <AppBar>
+          {progress}
           <Toolbar id="back-to-top-anchor">
             <IconButton edge="start" style={this.styles.menuButton} color="inherit" aria-label="menu" onClick={this.toggleDrawer}>
               <DehazeIcon></DehazeIcon>
@@ -450,7 +469,8 @@ export default class Main extends React.Component {
           </Toolbar>
         </AppBar>
 
-        {progress}
+        {/* 一个AppBar高度 */}
+        <div style={{marginTop: 64 + 'px'}}></div>
 
         <div className="container-main">
           <Container className="thread">

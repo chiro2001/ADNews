@@ -15,24 +15,10 @@ export default class Nmb {
     static CDN_THUMB: string = 'https://nmbimg.fastmirror.org/thumb/'
 
     static getThreadList(fid: number, page: number = 1) {
-        // return fetch(Nmb.API_SHOWF + '?id=' + fid + '&page=' + page, {
-        //     method: "GET"
-        // });
-        // return $.ajax({
-        //     url: Nmb.API_SHOWF + '?id=' + fid + '&page=' + page,
-        //     dataType: 'JSON'
-        // });
         return axios.get(Nmb.API_SHOWF + '?id=' + fid + '&page=' + page)
     }
 
     static getTheard(tid: number, page: number = 1) {
-        // return fetch(Nmb.API_THREAD + '?id=' + tid + '&page=' + page, {
-        //     method: "GET"
-        // });
-        // return $.ajax({
-        //     url: Nmb.API_THREAD + '?id=' + tid + '&page=' + page,
-        //     dataType: 'JSON'
-        // });
         return axios.get(Nmb.API_THREAD + '?id=' + tid + '&page=' + page)
     }
 }

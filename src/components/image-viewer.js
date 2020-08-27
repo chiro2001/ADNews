@@ -31,10 +31,6 @@ export default class ImageViewer extends React.Component {
     console.log('url', this.url)
   }
 
-  goBack() {
-    this.props.history.pop()
-  }
-
   render() {
     let viewer = undefined
     return (

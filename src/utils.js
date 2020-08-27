@@ -11,11 +11,11 @@ export default {
 			longDateFormat: {
 				LT: 'HH:mm',
 				LTS: 'HH:mm:ss',
-				L: 'YYYY-MM-DD',
+				L: 'YYYY/MM/DD',
 				LL: 'YYYY年MM月DD日',
 				LLL: 'YYYY年MM月DD日Ah点mm分',
 				LLLL: 'YYYY年MM月DD日ddddAh点mm分',
-				l: 'YYYY-M-D',
+				l: 'YYYY/M/D',
 				ll: 'YYYY年M月D日',
 				lll: 'YYYY年M月D日 HH:mm',
 				llll: 'YYYY年M月D日dddd HH:mm'
@@ -52,11 +52,11 @@ export default {
 				}
 			},
 			calendar: {
-				sameDay: '[今天]LT',
-				nextDay: '[明天]LT',
-				nextWeek: '[下]ddddLT',
-				lastDay: '[昨天]LT',
-				lastWeek: '[上]ddddLT',
+				sameDay: '[]LTS',
+				nextDay: '[明天]LTS',
+				nextWeek: '[下]ddddLTS',
+				lastDay: '[昨天]LTS',
+				lastWeek: '[上]ddddLTS',
 				sameElse: 'L'
 			},
 			dayOfMonthOrdinalParse: /\d{1,2}(日|月|周)/,
@@ -110,5 +110,27 @@ export default {
 			string = string.slice(0, 15) + '...'
 		string = string.replace('\n', '')
 		return string
+	},
+
+	colorHex: function (src) {
+		// RGB颜色值的正则
+		var reg = /^(rgb|RGB)/;
+		var color = src;
+		if (reg.test(color)) {
+			var strHex = "#";
+			// 把RGB的3个数值变成数组
+			var colorArr = color.replace(/(?:\(|\)|rgb|RGB)*/g, "").split(",");
+			// 转成16进制
+			for (var i = 0; i < colorArr.length; i++) {
+				var hex = Number(colorArr[i]).toString(16);
+				if (hex === "0") {
+					hex += hex;
+				}
+				strHex += hex;
+			}
+			return strHex;
+		} else {
+			return String(color);
+		}
 	}
 }
