@@ -157,7 +157,7 @@ export default class Thread extends React.Component {
           // console.log($(event.target).text())
           if (event.target.nodeName !== 'FONT')
             return
-          console.log(event)
+          // console.log(event)
           let src = $(event.target).text()
           let targetId = '' + this.parseQuote(src)
           // 如果找到
@@ -183,7 +183,7 @@ export default class Thread extends React.Component {
       if (data.replys.length <= 20)
         this.setState({ isLoading: false })
       setTimeout(function () {
-        console.log('excute click')
+        // console.log('excute click')
         $('font').click();
       }, 500)
     })
@@ -200,7 +200,7 @@ export default class Thread extends React.Component {
     if (data === undefined)
       return undefined
     // 过滤广告
-    console.log('createReply', data)
+    // console.log('createReply', data)
     if (data.id == 9999999)
       return undefined
     let tmpStyles = _.cloneDeep(this.styles)
@@ -220,7 +220,7 @@ export default class Thread extends React.Component {
       onClick={(event) => {
         // 解决点击重叠问题
         event.stopPropagation()
-        console.log("Image Clicked!")
+        // console.log("Image Clicked!")
         this.props.history.push('/image-viewer/' + window.btoa(Nmb.CDN_IMG + data.img + data.ext))
       }}
       className={'img' + window.btoa(data.img)}
@@ -294,7 +294,7 @@ export default class Thread extends React.Component {
       </div>)
 
     return (
-      <div className="root-thread" >
+      <div className="root-thread">
         <AppBar>
           {progress}
           <Toolbar id="back-to-top-anchor">

@@ -29,6 +29,7 @@ import MuiAlert from '@material-ui/lab/Alert';
 import Checkbox from '@material-ui/core/Checkbox';
 import Fab from '@material-ui/core/Fab';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
+import RestorePageIcon from '@material-ui/icons/RestorePage';
 import Zoom from '@material-ui/core/Zoom';
 
 // import { PhotoSwipe, PhotoSwipeGallery, PhotoSwipeUI_Default } from 'react-photoswipe';
@@ -60,6 +61,7 @@ function ScrollTop(props) {
 
   const handleClick = (event) => {
     const anchor = (event.target.ownerDocument || document).querySelector('#back-to-top-anchor');
+    // console.log('clicked!', anchor)
 
     if (anchor) {
       anchor.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -99,6 +101,8 @@ export default class Main extends React.Component {
       isLoading: true,
       isImageOpen: false,
       threads: [],
+      // 老串放在后面，新闻放在前面
+      localNowThreads: {},
       imageLoaded: {},
       // 多选模式
       muiChoise: false,
@@ -116,7 +120,7 @@ export default class Main extends React.Component {
       cardHeadCookie: { display: "inline-block" },
       cardHeadTime: { display: "inline-block", marginLeft: "5px" },
       cardContentImage: { marginRight: "5px" },
-      cardImage: { maxWidth: '150px', maxHeight: '350px', display: 'inline-block' },
+      cardImage: { maxWidth: '100px', maxHeight: '250px', display: 'inline-block' },
       cardContent: { display: "flex" },
       cardText: {},
       menuButton: {
@@ -193,13 +197,25 @@ export default class Main extends React.Component {
     localStorage.setItem('nowThreads', JSON.stringify(this.state.threads))
   }
 
+  // 删除本地数据
+  deleteOldThreads() {
+    localStorage.setItem('nowThreads', "[]")
+    localStorage.setItem('oldThreads', "{}")
+  }
+
   // 组件第一次渲染完成
   componentDidMount() {
-    console.log('componentDidMount')
-    console.log(JSON.parse(localStorage.getItem('nowThreads')))
+    // console.log('componentDidMount')
+    // console.log(JSON.parse(localStorage.getItem('nowThreads')))
     // 获取上次没看完的串
+    let nowThreads = JSON.parse(localStorage.getItem('nowThreads'));
+    let localNowThreads = {}
+    for (let i of nowThreads) {
+      localNowThreads[i.id] = i.id
+    }
     this.setState({
-      threads: JSON.parse(localStorage.getItem('nowThreads'))
+      threads: nowThreads,
+      localNowThreads: localNowThreads
     })
     this.fetchData(1)
   }
@@ -211,11 +227,32 @@ export default class Main extends React.Component {
     return data
   }
 
+  // 当前数据排序
+  sortNowThreads() {
+    // console.log('called sortNowThreads')
+    this.setState((pre) => {
+      let tmp = _.cloneDeep(pre.threads).sort((a, b) => {
+        // fix : 获取到数据，插入的时候就排序
+        if (b.id < a.id)
+          return -1
+        else return 1
+      })
+      // console.log('threads', pre.threads)
+      // console.log('update state...tmp:', tmp)
+      return {
+        threads: tmp
+      }
+    }, () => {
+      this.saveNowThreads()
+    })
+  }
+
   // 数据获取完成
   fetchDone() {
     this.setState((pre) => {
       let tmp = _.cloneDeep(pre.threads).sort((a, b) => {
-        return b.now - a.now
+        // fix : 获取到数据，插入的时候就排序
+        return b.now < a.now
       })
       // console.log('threads', pre.threads)
       // console.log('tmp', tmp)
@@ -246,7 +283,7 @@ export default class Main extends React.Component {
           // 这个串是不是存在在浏览区
           if (nowThreadsIds['' + i.id]) {
             // 找到这个串
-            for (let j=0; j<this.state.threads.length; j++) {
+            for (let j = 0; j < this.state.threads.length; j++) {
               if (this.state.threads[j].id === i.id) {
                 // 找到了就替换
                 this.setState((pre) => {
@@ -268,11 +305,13 @@ export default class Main extends React.Component {
           threads: tmp
         }
       })
+      // 排序
+      this.sortNowThreads();
       if (data.data.length === 20)
-        this.fetchData(page + 1)
+        this.fetchData(page + 1);
       else {
         // 数据获取完成
-        this.fetchDone()
+        this.fetchDone();
       }
     })
   }
@@ -310,7 +349,7 @@ export default class Main extends React.Component {
         // 解决点击重叠问题
         event.stopPropagation()
         console.log("Image Clicked!")
-        this.props.history.push('/image-viewer/' + window.btoa(Nmb.CDN_IMG + data.img + data.ext))
+        this.props.history.push('./image-viewer/' + window.btoa(Nmb.CDN_IMG + data.img + data.ext))
       }}
       className={'img' + window.btoa(data.img)}
       style={tmpStyles.cardContentImage}
@@ -353,7 +392,7 @@ export default class Main extends React.Component {
       }}
         onClick={() => {
           console.log("Thread Clicked!")
-          this.props.history.push('/thread/' + data.id)
+          this.props.history.push('/adnews/thread/' + data.id)
         }} >
         <div style={tmpStyles.cardHead}>
           <div>
@@ -407,6 +446,20 @@ export default class Main extends React.Component {
         {this.createThreadCard(i)}
         <br />
       </div>)
+      // if (i.id in this.state.localNowThreads) {
+      //   console.log('found', i.id, 'in', this.state.localNowThreads.length)
+      //   threads.push(<div key={this.state.threads.indexOf(i)}>
+      //     {this.createThreadCard(i)}
+      //     <br />
+      //   </div>)
+      // } else {
+      //   console.log('not found', i.id, 'in', this.state.localNowThreads.length)
+      //   // fix : 新串从头开始插入
+      //   threads = [<div key={this.state.threads.indexOf(i)}>
+      //     {this.createThreadCard(i)}
+      //     <br />
+      //   </div>].concat(threads)
+      // }
     }
 
     let empty = this.state.threads.length === 0 ? <div><br /><Alert severity="info">你没有未看过的串，你没有致。</Alert></div> : <div />
@@ -444,13 +497,20 @@ export default class Main extends React.Component {
         </Drawer>
         <AppBar>
           {progress}
-          <Toolbar id="back-to-top-anchor">
+          <Toolbar>
             <IconButton edge="start" style={this.styles.menuButton} color="inherit" aria-label="menu" onClick={this.toggleDrawer}>
               <DehazeIcon></DehazeIcon>
             </IconButton>
             <Typography variant="h6" style={this.styles.title}>
               速报观察
             </Typography>
+            <IconButton edge="start" color="inherit" onClick={() => {
+              // 删除所有储存数据然后刷新
+              this.deleteOldThreads();
+              window.location.reload();
+            }}>
+              <RestorePageIcon></RestorePageIcon>
+            </IconButton>
             <IconButton edge="start" color="inherit" onClick={() => {
               this.setState((pre) => {
                 return {
@@ -470,7 +530,7 @@ export default class Main extends React.Component {
         </AppBar>
 
         {/* 一个AppBar高度 */}
-        <div style={{marginTop: 64 + 'px'}}></div>
+        <div style={{ marginTop: 64 + 'px' }} id="back-to-top-anchor"></div>
 
         <div className="container-main">
           <Container className="thread">

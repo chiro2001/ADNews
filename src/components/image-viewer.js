@@ -44,17 +44,19 @@ export default class ImageViewer extends React.Component {
             </IconButton>
           </Toolbar>
         </AppBar>
+        <br />
         <Container>
           <div style={{ height: "100%", margin: 'auto' }}>
-            <img id="image" alt="" src={this.url}
-              onLoad={() => {
-                viewer = new Viewer(document.querySelectorAll('#image')[0], {
-                  inline: true,
-                  viewed() {
-                    viewer.zoomTo(1);
-                  },
-                });
-              }} />
+            <img id="image" alt="" src={this.url} style={{ width: "100%" }}
+            // onLoad={() => {
+            //   viewer = new Viewer(document.querySelectorAll('#image')[0], {
+            //     inline: true,
+            //     viewed() {
+            //       viewer.zoomTo(1);
+            //     },
+            //   });
+            // }}
+            />
           </div>
         </Container>
       </div>

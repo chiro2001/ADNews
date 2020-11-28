@@ -31,11 +31,12 @@ Array.prototype.remove = function (val) {
 ReactDOM.render(
   <ThemeProvider theme={Config.theme}>
     <Router>
-      <Route path="/" component={App} />
-      <Route path='/main' component={Main} />
-      <Route path='/thread/:id' component={Thread} />
-      <Route path='/image-viewer/:_url' component={ImageViewer} />
-      <Redirect from="/" to="/main" />
+      <Route path='/adnews/thread/:id' component={Thread} />
+      <Route path='/adnews/image-viewer/:_url' component={ImageViewer} />
+      <Route path='/adnews/main' component={Main} />
+      <Redirect from="/adnews" to="/adnews/main" />
+      {/* <Redirect from="/" to="/adnews" />
+      <Redirect from="/adnews" to="/adnews/main" /> */}
     </Router>
   </ThemeProvider>,
   document.getElementById('root')
